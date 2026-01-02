@@ -1,7 +1,12 @@
+import { PGlite } from '@electric-sql/pglite';
+import { drizzle } from 'drizzle-orm/pglite';
 import type { StorageAdapter, StorageMode, ExportedData, DrizzleDatabase } from './types';
+import * as schema from '../db/schema';
+
+const DB_NAME = 'idb://financecontroll';
 
 export class PGliteAdapter implements StorageAdapter {
-  private connected = false;
+  private client: PGlite | null = null;
   private _db: DrizzleDatabase | null = null;
 
   get db(): DrizzleDatabase {
@@ -12,17 +17,41 @@ export class PGliteAdapter implements StorageAdapter {
   }
 
   async connect(): Promise<void> {
-    // TODO: Implement in Task 3
-    this.connected = true;
+    try {
+      // Check if IndexedDB is available
+      if (typeof window !== 'undefined' && !window.indexedDB) {
+        throw new Error(
+          'IndexedDB is not available. This may happen in private/incognito mode.'
+        );
+      }
+
+      // Use IndexedDB for persistence in browser
+      this.client = new PGlite(DB_NAME);
+      this._db = drizzle(this.client, { schema });
+    } catch (error) {
+      // Handle storage quota exceeded or other errors
+      if (error instanceof Error) {
+        if (error.name === 'QuotaExceededError') {
+          throw new Error(
+            'Storage quota exceeded. Please free up some space or clear browser data.'
+          );
+        }
+        throw error;
+      }
+      throw new Error('Failed to connect to local database');
+    }
   }
 
   async disconnect(): Promise<void> {
-    this.connected = false;
-    this._db = null;
+    if (this.client) {
+      await this.client.close();
+      this.client = null;
+      this._db = null;
+    }
   }
 
   isConnected(): boolean {
-    return this.connected;
+    return this.client !== null && this._db !== null;
   }
 
   getMode(): StorageMode {
@@ -30,11 +59,18 @@ export class PGliteAdapter implements StorageAdapter {
   }
 
   async migrate(): Promise<void> {
-    // TODO: Implement in Task 3
+    if (!this.client) {
+      throw new Error('Database not connected. Call connect() first.');
+    }
+
+    // Run migrations - will be implemented properly in Task 4 with full schema
+    // For now, just ensure the database is ready
+    await this.client.exec('SELECT 1');
   }
 
   async exportData(): Promise<ExportedData> {
-    // TODO: Implement in Phase 3
+    // TODO: Implement in Phase 3 after schema is complete
+    // This will query all tables and return structured data
     return {
       version: '1.0.0',
       exportedAt: new Date().toISOString(),
@@ -47,10 +83,19 @@ export class PGliteAdapter implements StorageAdapter {
   }
 
   async importData(_data: ExportedData): Promise<void> {
-    // TODO: Implement in Phase 3
+    // TODO: Implement in Phase 3 after schema is complete
+    // This will clear existing data and import in a transaction
   }
 
   async ping(): Promise<boolean> {
-    return this.connected;
+    if (!this.client) {
+      return false;
+    }
+    try {
+      await this.client.exec('SELECT 1');
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
