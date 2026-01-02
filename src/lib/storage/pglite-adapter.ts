@@ -2,6 +2,7 @@ import { PGlite } from '@electric-sql/pglite';
 import { drizzle } from 'drizzle-orm/pglite';
 import type { StorageAdapter, StorageMode, ExportedData, DrizzleDatabase } from './types';
 import * as schema from '../db/schema';
+import { migrations } from '../db/migrations';
 
 const DB_NAME = 'idb://financecontroll';
 
@@ -63,9 +64,8 @@ export class PGliteAdapter implements StorageAdapter {
       throw new Error('Database not connected. Call connect() first.');
     }
 
-    // Run migrations - will be implemented properly in Task 4 with full schema
-    // For now, just ensure the database is ready
-    await this.client.exec('SELECT 1');
+    // Run migrations to create all tables
+    await this.client.exec(migrations);
   }
 
   async exportData(): Promise<ExportedData> {
