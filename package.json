@@ -1,0 +1,15 @@
+{
+  "name": "finance-controll",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Run: bun run dev after Next.js setup'",
+    "build": "echo 'Run: bun run build after Next.js setup'"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
