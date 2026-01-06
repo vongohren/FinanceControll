@@ -15,7 +15,20 @@ This document provides context for Claude Code when working on this codebase.
 ```bash
 bun run build          # Build - MUST pass before committing
 bun run lint           # Lint - MUST pass before committing
+bun run test:run       # Unit/integration tests - MUST pass before committing
+bun run test:e2e       # E2E tests - MUST pass before committing
 bun run dev            # Development server (localhost:3000)
+```
+
+### Testing Commands
+
+```bash
+bun run test           # Run tests in watch mode
+bun run test:ui        # Open Vitest UI
+bun run test:coverage  # Run with coverage report
+bun run test:e2e       # Run Playwright E2E tests
+bun run test:e2e:ui    # Open Playwright UI
+bun run test:all       # Run all tests (unit + e2e)
 ```
 
 ### Database Commands
@@ -25,8 +38,6 @@ bun run db:generate    # Generate Drizzle migrations after schema changes
 bun run db:push        # Push schema to database
 bun run db:studio      # Visual database editor
 ```
-
-**Note**: No test suite is configured yet. When tests are added, include verification command here.
 
 ## Architecture
 
@@ -99,6 +110,54 @@ All pages are client components (`'use client'`) - use the hook to access storag
 2. Add raw SQL to `src/lib/db/migrations.ts` (idempotent)
 3. Run `bun run db:generate` then `bun run db:push`
 
+## Testing
+
+### Architecture
+
+```
+Unit Tests:  Vitest + @testing-library/react + happy-dom
+Storage:     TestPGliteAdapter (in-memory, no IndexedDB)
+E2E Tests:   Playwright (real browser + IndexedDB)
+```
+
+### Test Helpers
+
+Located in `src/__tests__/helpers/`:
+
+- **TestPGliteAdapter** - In-memory database for fast tests
+- **createTestAdapter()** - Creates fresh adapter with migrations
+- **createMockAdapter()** - Fully mocked adapter for component tests
+- **renderWithProviders()** - Renders with test context
+
+### Writing Tests
+
+**Storage adapter tests** (real SQL):
+```typescript
+import { createTestAdapter } from '@/__tests__/helpers';
+
+let adapter: TestPGliteAdapter;
+beforeEach(async () => adapter = await createTestAdapter());
+afterEach(async () => await adapter.disconnect());
+```
+
+**Component tests** (mocked storage):
+```typescript
+vi.mock('@/lib/storage', () => ({
+  useStorage: vi.fn(() => ({ mode: 'local', isLoading: false })),
+}));
+```
+
+### File Locations
+
+| Purpose | Location |
+|---------|----------|
+| Test setup | `src/__tests__/setup.ts` |
+| Test helpers | `src/__tests__/helpers/` |
+| Unit tests | `src/**/__tests__/*.test.ts(x)` |
+| E2E tests | `e2e/*.spec.ts` |
+| Vitest config | `vitest.config.ts` |
+| Playwright config | `playwright.config.ts` |
+
 ## File Locations
 
 | Purpose | Location |
@@ -147,3 +206,10 @@ Components are copied, not imported from package. To add new components:
 ```bash
 bunx shadcn@latest add [component-name]
 ```
+
+### Testing Gotchas
+
+- **PGlite in-memory**: Use `new PGlite()` without path for tests (no IndexedDB)
+- **Module mocking**: Place `vi.mock()` at file top, before imports
+- **Async tests**: Always `await` adapter operations and disconnect in afterEach
+- **E2E cookies**: Clear with `context.clearCookies()` in beforeEach
