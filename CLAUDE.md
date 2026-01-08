@@ -12,13 +12,17 @@ This document provides context for Claude Code when working on this codebase.
 
 ### Verification Commands
 
+**ALL of these MUST pass before committing:**
+
 ```bash
-bun run build          # Build - MUST pass before committing
-bun run lint           # Lint - MUST pass before committing
-bun run test:run       # Unit/integration tests - MUST pass before committing
-bun run test:e2e       # E2E tests - MUST pass before committing
+bun run build          # Build - MUST pass
+bun run lint           # Lint - MUST pass
+bun run test:run       # Unit/integration tests - MUST pass
+bun run test:e2e       # E2E tests - MUST pass
 bun run dev            # Development server (localhost:3000)
 ```
+
+**When adding new code, you MUST also write tests.** Run `bun run test:coverage` to ensure coverage doesn't decrease.
 
 ### Testing Commands
 
@@ -111,6 +115,14 @@ All pages are client components (`'use client'`) - use the hook to access storag
 3. Run `bun run db:generate` then `bun run db:push`
 
 ## Testing
+
+**IMPORTANT: 100% Test Coverage Required**
+
+All new code MUST have corresponding tests. This is a strict requirement:
+- Every new function/method needs unit tests
+- Every new component needs component tests
+- Every new user flow needs E2E tests
+- Coverage must not decrease - run `bun run test:coverage` to verify
 
 ### Architecture
 
