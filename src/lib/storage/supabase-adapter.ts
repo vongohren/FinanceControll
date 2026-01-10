@@ -1,4 +1,4 @@
-import type { StorageAdapter, StorageMode, ExportedData, DrizzleDatabase } from './types';
+import type { DrizzleDatabase, ExportedData, StorageAdapter, StorageMode } from './types';
 
 export class SupabaseAdapter implements StorageAdapter {
   private connected = false;
@@ -6,7 +6,7 @@ export class SupabaseAdapter implements StorageAdapter {
 
   constructor(
     private supabaseUrl: string,
-    private supabaseAnonKey: string
+    private supabaseAnonKey: string,
   ) {
     // Credentials stored for future use
     void this.supabaseUrl;

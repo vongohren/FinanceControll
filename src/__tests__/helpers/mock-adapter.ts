@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import type { StorageAdapter, StorageMode, ExportedData } from '@/lib/storage/types';
+import type { ExportedData, StorageAdapter, StorageMode } from '@/lib/storage/types';
 
 /**
  * Fully mocked adapter for component tests.

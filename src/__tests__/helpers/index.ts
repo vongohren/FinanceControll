@@ -1,7 +1,7 @@
-export { TestPGliteAdapter, createTestAdapter } from './test-adapter';
 export { createMockAdapter } from './mock-adapter';
+export { createTestAdapter, TestPGliteAdapter } from './test-adapter';
 export {
-  TestProviders,
-  renderWithProviders,
   createMockStorageContext,
+  renderWithProviders,
+  TestProviders,
 } from './test-providers';

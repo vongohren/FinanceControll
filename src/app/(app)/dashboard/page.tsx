@@ -1,7 +1,7 @@
 'use client';
 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useStorage } from '@/lib/storage';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 export default function DashboardPage() {
   const { mode, isLoading } = useStorage();
@@ -54,9 +54,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">-</p>
-            <p className="text-xs text-muted-foreground">
-              Add assets to see your total value
-            </p>
+            <p className="text-xs text-muted-foreground">Add assets to see your total value</p>
           </CardContent>
         </Card>
       </div>
@@ -67,8 +65,8 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent className="space-y-2">
           <p className="text-sm text-muted-foreground">
-            FinanceControll helps you track investments in startups, funds, state
-            obligations, crypto, and other assets.
+            FinanceControll helps you track investments in startups, funds, state obligations,
+            crypto, and other assets.
           </p>
           <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
             <li>Create portfolios to organize your investments</li>

@@ -1,24 +1,23 @@
 // Types
-export type {
-  StorageMode,
-  StorageConfig,
-  StorageAdapter,
-  StorageContextValue,
-  ExportedData,
-  Portfolio,
-  Asset,
-  Transaction,
-  Valuation,
-  ExchangeRate,
-} from './types';
 
 // Context
 export { StorageProvider, useStorage } from './context';
-
 // Factory
 export {
+  clearStoredMode,
   createStorageAdapter,
   getStoredMode,
   setStoredMode,
-  clearStoredMode,
 } from './factory';
+export type {
+  Asset,
+  ExchangeRate,
+  ExportedData,
+  Portfolio,
+  StorageAdapter,
+  StorageConfig,
+  StorageContextValue,
+  StorageMode,
+  Transaction,
+  Valuation,
+} from './types';

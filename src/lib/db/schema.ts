@@ -1,14 +1,14 @@
+import { relations } from 'drizzle-orm';
 import {
+  date,
+  decimal,
+  pgEnum,
   pgTable,
-  uuid,
   text,
   timestamp,
-  decimal,
-  date,
-  pgEnum,
   uniqueIndex,
+  uuid,
 } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
 
 // Enums
 export const assetTypeEnum = pgEnum('asset_type', [
@@ -85,12 +85,8 @@ export const exchangeRates = pgTable(
     date: date('date').notNull(),
   },
   (table) => [
-    uniqueIndex('currency_date_idx').on(
-      table.fromCurrency,
-      table.toCurrency,
-      table.date
-    ),
-  ]
+    uniqueIndex('currency_date_idx').on(table.fromCurrency, table.toCurrency, table.date),
+  ],
 );
 
 // Relations

@@ -1,8 +1,8 @@
 import { PGlite } from '@electric-sql/pglite';
 import { drizzle } from 'drizzle-orm/pglite';
-import type { StorageAdapter, StorageMode, ExportedData, DrizzleDatabase } from './types';
-import * as schema from '../db/schema';
 import { migrations } from '../db/migrations';
+import * as schema from '../db/schema';
+import type { DrizzleDatabase, ExportedData, StorageAdapter, StorageMode } from './types';
 
 const DB_NAME = 'idb://financecontroll';
 
@@ -21,9 +21,7 @@ export class PGliteAdapter implements StorageAdapter {
     try {
       // Check if IndexedDB is available
       if (typeof window !== 'undefined' && !window.indexedDB) {
-        throw new Error(
-          'IndexedDB is not available. This may happen in private/incognito mode.'
-        );
+        throw new Error('IndexedDB is not available. This may happen in private/incognito mode.');
       }
 
       // Use IndexedDB for persistence in browser
@@ -34,7 +32,7 @@ export class PGliteAdapter implements StorageAdapter {
       if (error instanceof Error) {
         if (error.name === 'QuotaExceededError') {
           throw new Error(
-            'Storage quota exceeded. Please free up some space or clear browser data.'
+            'Storage quota exceeded. Please free up some space or clear browser data.',
           );
         }
         throw error;

@@ -1,4 +1,4 @@
-import type { StorageAdapter, StorageMode, ExportedData, DrizzleDatabase } from './types';
+import type { DrizzleDatabase, ExportedData, StorageAdapter, StorageMode } from './types';
 
 export class PostgresAdapter implements StorageAdapter {
   private connected = false;

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the useStorage hook at module level
 vi.mock('@/lib/storage', () => ({
@@ -12,8 +12,8 @@ vi.mock('@/lib/storage', () => ({
   })),
 }));
 
-import DashboardPage from '../page';
 import { useStorage } from '@/lib/storage';
+import DashboardPage from '../page';
 
 describe('DashboardPage', () => {
   beforeEach(() => {

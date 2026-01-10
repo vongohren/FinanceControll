@@ -1,15 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useStorage } from '@/lib/storage';
 
 export default function SetupPage() {
@@ -27,11 +21,7 @@ export default function SetupPage() {
       router.push('/dashboard');
     } catch (err) {
       console.error('Failed to initialize local storage:', err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to initialize local storage'
-      );
+      setError(err instanceof Error ? err.message : 'Failed to initialize local storage');
     } finally {
       setIsLoading(false);
     }
@@ -67,11 +57,7 @@ export default function SetupPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button
-                onClick={handleLocalSetup}
-                disabled={isLoading}
-                className="w-full"
-              >
+              <Button onClick={handleLocalSetup} disabled={isLoading} className="w-full">
                 {isLoading ? 'Initializing...' : 'Get Started'}
               </Button>
             </CardContent>
@@ -81,8 +67,7 @@ export default function SetupPage() {
             <CardHeader>
               <CardTitle>Connect Your Database</CardTitle>
               <CardDescription>
-                Bring your own Postgres or Supabase. You control the
-                infrastructure.
+                Bring your own Postgres or Supabase. You control the infrastructure.
               </CardDescription>
             </CardHeader>
             <CardContent>

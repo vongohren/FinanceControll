@@ -2,9 +2,7 @@ import type { StorageAdapter, StorageConfig } from './types';
 
 const STORAGE_MODE_KEY = 'financecontroll_storage_mode';
 
-export async function createStorageAdapter(
-  config: StorageConfig
-): Promise<StorageAdapter> {
+export async function createStorageAdapter(config: StorageConfig): Promise<StorageAdapter> {
   switch (config.mode) {
     case 'local': {
       const { PGliteAdapter } = await import('./pglite-adapter');

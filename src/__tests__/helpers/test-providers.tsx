@@ -1,6 +1,6 @@
-import { type ReactNode } from 'react';
-import { render, type RenderOptions } from '@testing-library/react';
-import { type StorageContextValue } from '@/lib/storage/types';
+import { type RenderOptions, render } from '@testing-library/react';
+import type { ReactNode } from 'react';
+import type { StorageContextValue } from '@/lib/storage/types';
 import { createMockAdapter } from './mock-adapter';
 
 interface TestProvidersProps {
@@ -23,7 +23,7 @@ export function TestProviders({ children, storageValue }: TestProvidersProps) {
  * Default mock storage context value for testing.
  */
 export function createMockStorageContext(
-  overrides: Partial<StorageContextValue> = {}
+  overrides: Partial<StorageContextValue> = {},
 ): StorageContextValue {
   return {
     adapter: createMockAdapter(),
@@ -43,13 +43,11 @@ export function renderWithProviders(
   options?: {
     storageValue?: Partial<StorageContextValue>;
     renderOptions?: Omit<RenderOptions, 'wrapper'>;
-  }
+  },
 ) {
   return render(ui, {
     wrapper: ({ children }) => (
-      <TestProviders storageValue={options?.storageValue}>
-        {children}
-      </TestProviders>
+      <TestProviders storageValue={options?.storageValue}>{children}</TestProviders>
     ),
     ...options?.renderOptions,
   });

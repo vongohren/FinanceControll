@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { eq } from 'drizzle-orm';
-import { createTestAdapter, TestPGliteAdapter } from '@/__tests__/helpers';
-import { portfolios, assets } from '@/lib/db/schema';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { createTestAdapter, type TestPGliteAdapter } from '@/__tests__/helpers';
+import { assets, portfolios } from '@/lib/db/schema';
 
 describe('PGliteAdapter', () => {
   let adapter: TestPGliteAdapter;

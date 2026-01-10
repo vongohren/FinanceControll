@@ -1,24 +1,8 @@
 'use client';
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  type ReactNode,
-} from 'react';
-import type {
-  StorageAdapter,
-  StorageConfig,
-  StorageContextValue,
-  StorageMode,
-} from './types';
-import {
-  createStorageAdapter,
-  getStoredMode,
-  setStoredMode,
-} from './factory';
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import { createStorageAdapter, getStoredMode, setStoredMode } from './factory';
+import type { StorageAdapter, StorageConfig, StorageContextValue, StorageMode } from './types';
 
 const StorageContext = createContext<StorageContextValue | null>(null);
 
@@ -53,33 +37,36 @@ export function StorageProvider({ children }: StorageProviderProps) {
     init();
   }, []);
 
-  const switchMode = useCallback(async (config: StorageConfig) => {
-    setIsLoading(true);
-    setError(null);
+  const switchMode = useCallback(
+    async (config: StorageConfig) => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      // Disconnect existing adapter
-      if (adapter) {
-        await adapter.disconnect();
+      try {
+        // Disconnect existing adapter
+        if (adapter) {
+          await adapter.disconnect();
+        }
+
+        // Create and connect new adapter
+        const newAdapter = await createStorageAdapter(config);
+        await newAdapter.connect();
+        await newAdapter.migrate();
+
+        // Persist the mode
+        setStoredMode(config);
+
+        setAdapter(newAdapter);
+        setMode(config.mode);
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error('Failed to switch storage mode'));
+        throw err;
+      } finally {
+        setIsLoading(false);
       }
-
-      // Create and connect new adapter
-      const newAdapter = await createStorageAdapter(config);
-      await newAdapter.connect();
-      await newAdapter.migrate();
-
-      // Persist the mode
-      setStoredMode(config);
-
-      setAdapter(newAdapter);
-      setMode(config.mode);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error('Failed to switch storage mode'));
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [adapter]);
+    },
+    [adapter],
+  );
 
   const value: StorageContextValue = {
     adapter,
@@ -89,11 +76,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
     switchMode,
   };
 
-  return (
-    <StorageContext.Provider value={value}>
-      {children}
-    </StorageContext.Provider>
-  );
+  return <StorageContext.Provider value={value}>{children}</StorageContext.Provider>;
 }
 
 export function useStorage(): StorageContextValue {

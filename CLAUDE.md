@@ -6,7 +6,7 @@ This document provides context for Claude Code when working on this codebase.
 
 **FinanceControll** is a privacy-first investment tracker. Core philosophy: "Your data, your control" - local storage by default, cloud optional.
 
-**Tech Stack**: Next.js 16 (App Router), React 19, TypeScript (strict), Drizzle ORM, PGlite (IndexedDB), Tailwind CSS 4, shadcn/ui, Bun
+**Tech Stack**: Next.js 16 (App Router), React 19, TypeScript (strict), Drizzle ORM, PGlite (IndexedDB), Tailwind CSS 4, shadcn/ui, Biome, Bun
 
 ## Quick Reference
 
@@ -16,13 +16,21 @@ This document provides context for Claude Code when working on this codebase.
 
 ```bash
 bun run build          # Build - MUST pass
-bun run lint           # Lint - MUST pass
+bun run lint           # Lint & format check - MUST pass
 bun run test:run       # Unit/integration tests - MUST pass
 bun run test:e2e       # E2E tests - MUST pass
 bun run dev            # Development server (localhost:3000)
 ```
 
 **When adding new code, you MUST also write tests.** Run `bun run test:coverage` to ensure coverage doesn't decrease.
+
+### Linting & Formatting Commands
+
+```bash
+bun run lint           # Check code quality and formatting
+bun run lint:fix       # Auto-fix linting and formatting issues
+bun run format         # Format code with Biome
+```
 
 ### Testing Commands
 
@@ -97,10 +105,12 @@ All pages are client components (`'use client'`) - use the hook to access storag
 ## Code Conventions
 
 - **TypeScript strict mode** with `noUncheckedIndexedAccess`
+- **Code Quality**: Biome for linting and formatting (configuration in `biome.json`)
 - **Path alias**: `@/*` → `./src/*`
 - **Components**: PascalCase, in `src/components/`
 - **UI Components**: shadcn/ui in `src/components/ui/` - use CVA for variants
 - **Utility**: `cn()` from `src/lib/utils.ts` for className merging
+- **Formatting**: Single quotes, 2-space indents, 100 char line width, trailing commas
 
 ### Adding New Storage Operations
 
@@ -181,6 +191,7 @@ vi.mock('@/lib/storage', () => ({
 | Migrations | `src/lib/db/migrations.ts` |
 | Utilities | `src/lib/utils.ts` |
 | Middleware | `src/proxy.ts` |
+| Biome Config | `biome.json` |
 
 ## Development Phases
 
@@ -225,3 +236,11 @@ bunx shadcn@latest add [component-name]
 - **Module mocking**: Place `vi.mock()` at file top, before imports
 - **Async tests**: Always `await` adapter operations and disconnect in afterEach
 - **E2E cookies**: Clear with `context.clearCookies()` in beforeEach
+
+### Biome Configuration
+
+Project uses Biome (Rust-based toolchain) for both linting and formatting:
+- **Config**: `biome.json` - includes formatting, linting, and import organization
+- **Performance**: 10-100x faster than ESLint/Prettier
+- **Auto-fix**: `bun run lint:fix` applies safe fixes automatically
+- **Overrides**: Test files allow `any` types, stricter rules for production code

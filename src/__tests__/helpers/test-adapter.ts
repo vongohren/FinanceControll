@@ -1,8 +1,8 @@
 import { PGlite } from '@electric-sql/pglite';
 import { drizzle } from 'drizzle-orm/pglite';
-import type { StorageAdapter, StorageMode, ExportedData } from '@/lib/storage/types';
-import * as schema from '@/lib/db/schema';
 import { migrations } from '@/lib/db/migrations';
+import * as schema from '@/lib/db/schema';
+import type { ExportedData, StorageAdapter, StorageMode } from '@/lib/storage/types';
 
 /**
  * In-memory PGlite adapter for testing.
