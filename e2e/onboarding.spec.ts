@@ -56,7 +56,7 @@ test.describe('Onboarding Flow', () => {
     // Open new tab in same context
     const newPage = await context.newPage();
     await newPage.goto('/dashboard');
-    await expect(newPage.getByText('Dashboard')).toBeVisible();
+    await expect(newPage.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
   });
 });
 
@@ -69,8 +69,10 @@ test.describe('Dashboard', () => {
   });
 
   test('should display empty state', async ({ page }) => {
-    // Use exact match to avoid matching "Create portfolios..."
-    await expect(page.getByText('Portfolios', { exact: true })).toBeVisible();
+    // Check for dashboard heading
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+    // Check for portfolio card in main content (not sidebar)
+    await expect(page.getByRole('main').getByText('Portfolios', { exact: true })).toBeVisible();
     await expect(page.getByText('0', { exact: true }).first()).toBeVisible();
   });
 });
