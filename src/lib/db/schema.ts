@@ -1,5 +1,6 @@
 import { relations } from 'drizzle-orm';
 import {
+  boolean,
   date,
   decimal,
   pgEnum,
@@ -29,6 +30,7 @@ export const portfolios = pgTable('portfolios', {
   name: text('name').notNull(),
   description: text('description'),
   baseCurrency: text('base_currency').default('NOK').notNull(),
+  isArchived: boolean('is_archived').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -42,6 +44,9 @@ export const assets = pgTable('assets', {
   name: text('name').notNull(),
   ticker: text('ticker'),
   notes: text('notes'),
+  metadata: text('metadata'),
+  currentQuantity: decimal('current_quantity', { precision: 20, scale: 8 }),
+  lastValuationDate: date('last_valuation_date'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

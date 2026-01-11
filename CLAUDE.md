@@ -81,6 +81,35 @@ Schema defined in `src/lib/db/schema.ts` using Drizzle ORM:
 
 Migrations in `src/lib/db/migrations.ts` - raw SQL, idempotent (`IF NOT EXISTS`)
 
+### Data Model Decisions
+
+**Asset Metadata**
+- **Approach**: JSON field (`metadata` column) on assets table
+- **Validation**: Zod schemas per asset type (see `src/lib/db/validation.ts`)
+- **Storage**: TEXT column (JSON string) for PGlite compatibility
+- Each asset type has a specific schema (startup_equity, fund, state_obligation, crypto, public_equity, other)
+
+**Cached Values**
+Assets table includes denormalized fields for performance:
+- `currentQuantity`: Running balance updated on each transaction (avoids SUM queries)
+- `lastValuationDate`: Most recent valuation date for staleness checks (fast UI performance)
+
+**Cost Basis Method**
+- **FIFO (First In, First Out)** - sells consume oldest purchases first
+- Implementation: `src/lib/calculations/cost-basis.ts`
+- Future: Could add LIFO, Average Cost, or Specific Lot options
+
+**Soft Deletes**
+- Portfolios support soft delete via `isArchived` boolean
+- Archived portfolios filtered by default in queries (`WHERE is_archived = false`)
+- Enables recovery and audit trails
+
+**Performance Indexes**
+See `src/lib/db/migrations.ts` for all indexes. Key patterns:
+- Partial indexes on filtered queries (e.g., `WHERE is_archived = false`)
+- Composite indexes with DESC ordering for latest-first queries
+- Indexes: `idx_portfolios_archived`, `idx_assets_portfolio`, `idx_assets_last_valuation`, `idx_transactions_asset_date`, `idx_valuations_asset_date`
+
 ### Route Structure
 
 ```

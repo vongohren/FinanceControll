@@ -84,4 +84,30 @@ CREATE TABLE IF NOT EXISTS exchange_rates (
 -- Create unique index on exchange_rates
 CREATE UNIQUE INDEX IF NOT EXISTS currency_date_idx
 ON exchange_rates(from_currency, to_currency, date);
+
+-- Add new columns to portfolios
+ALTER TABLE portfolios
+  ADD COLUMN IF NOT EXISTS is_archived BOOLEAN NOT NULL DEFAULT false;
+
+-- Add new columns to assets
+ALTER TABLE assets
+  ADD COLUMN IF NOT EXISTS metadata TEXT,
+  ADD COLUMN IF NOT EXISTS current_quantity DECIMAL(20, 8),
+  ADD COLUMN IF NOT EXISTS last_valuation_date DATE;
+
+-- Performance indexes
+CREATE INDEX IF NOT EXISTS idx_portfolios_archived
+  ON portfolios(is_archived) WHERE is_archived = false;
+
+CREATE INDEX IF NOT EXISTS idx_assets_portfolio
+  ON assets(portfolio_id);
+
+CREATE INDEX IF NOT EXISTS idx_assets_last_valuation
+  ON assets(last_valuation_date) WHERE last_valuation_date IS NOT NULL;
+
+CREATE INDEX IF NOT EXISTS idx_transactions_asset_date
+  ON transactions(asset_id, date DESC);
+
+CREATE INDEX IF NOT EXISTS idx_valuations_asset_date
+  ON valuations(asset_id, valuation_date DESC);
 `;

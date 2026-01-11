@@ -79,6 +79,31 @@ describe('PGliteAdapter', () => {
 
       expect(updated?.name).toBe('Updated');
     });
+
+    it('should create portfolio with isArchived field', async () => {
+      const [portfolio] = await adapter.db
+        .insert(portfolios)
+        .values({
+          name: 'Archived Portfolio',
+          baseCurrency: 'USD',
+          isArchived: true,
+        })
+        .returning();
+
+      expect(portfolio?.isArchived).toBe(true);
+    });
+
+    it('should default isArchived to false', async () => {
+      const [portfolio] = await adapter.db
+        .insert(portfolios)
+        .values({
+          name: 'Active Portfolio',
+          baseCurrency: 'USD',
+        })
+        .returning();
+
+      expect(portfolio?.isArchived).toBe(false);
+    });
   });
 
   describe('asset operations', () => {
@@ -102,6 +127,100 @@ describe('PGliteAdapter', () => {
 
       expect(asset?.name).toBe('Bitcoin');
       expect(asset?.portfolioId).toBe(portfolio.id);
+    });
+
+    it('should create asset with metadata field', async () => {
+      const [portfolio] = await adapter.db
+        .insert(portfolios)
+        .values({ name: 'Test', baseCurrency: 'USD' })
+        .returning();
+
+      if (!portfolio) throw new Error('Failed to create portfolio');
+
+      const metadata = { sharesOutstanding: 1000000, shareClass: 'Common' };
+      const [asset] = await adapter.db
+        .insert(assets)
+        .values({
+          portfolioId: portfolio.id,
+          type: 'startup_equity',
+          name: 'Test Startup',
+          metadata: JSON.stringify(metadata),
+        })
+        .returning();
+
+      expect(asset?.metadata).toBeTruthy();
+      expect(JSON.parse(asset?.metadata ?? '{}')).toEqual(metadata);
+    });
+
+    it('should create asset with currentQuantity field', async () => {
+      const [portfolio] = await adapter.db
+        .insert(portfolios)
+        .values({ name: 'Test', baseCurrency: 'USD' })
+        .returning();
+
+      if (!portfolio) throw new Error('Failed to create portfolio');
+
+      const [asset] = await adapter.db
+        .insert(assets)
+        .values({
+          portfolioId: portfolio.id,
+          type: 'public_equity',
+          name: 'Apple Inc.',
+          ticker: 'AAPL',
+          currentQuantity: '100.50000000',
+        })
+        .returning();
+
+      expect(asset?.currentQuantity).toBe('100.50000000');
+    });
+
+    it('should create asset with lastValuationDate field', async () => {
+      const [portfolio] = await adapter.db
+        .insert(portfolios)
+        .values({ name: 'Test', baseCurrency: 'USD' })
+        .returning();
+
+      if (!portfolio) throw new Error('Failed to create portfolio');
+
+      const [asset] = await adapter.db
+        .insert(assets)
+        .values({
+          portfolioId: portfolio.id,
+          type: 'startup_equity',
+          name: 'Test Startup',
+          lastValuationDate: '2024-12-15',
+        })
+        .returning();
+
+      expect(asset?.lastValuationDate).toBe('2024-12-15');
+    });
+
+    it('should create asset with all new fields', async () => {
+      const [portfolio] = await adapter.db
+        .insert(portfolios)
+        .values({ name: 'Test', baseCurrency: 'USD' })
+        .returning();
+
+      if (!portfolio) throw new Error('Failed to create portfolio');
+
+      const metadata = { exchange: 'NYSE', sector: 'Technology' };
+      const [asset] = await adapter.db
+        .insert(assets)
+        .values({
+          portfolioId: portfolio.id,
+          type: 'public_equity',
+          name: 'Microsoft',
+          ticker: 'MSFT',
+          metadata: JSON.stringify(metadata),
+          currentQuantity: '50.25000000',
+          lastValuationDate: '2024-12-31',
+        })
+        .returning();
+
+      expect(asset?.metadata).toBeTruthy();
+      expect(JSON.parse(asset?.metadata ?? '{}')).toEqual(metadata);
+      expect(asset?.currentQuantity).toBe('50.25000000');
+      expect(asset?.lastValuationDate).toBe('2024-12-31');
     });
   });
 });
