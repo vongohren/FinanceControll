@@ -1,14 +1,11 @@
 import type { ReactNode } from 'react';
+import { Sidebar } from '@/components/Sidebar';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-xl font-semibold">FinanceControll</h1>
-        </div>
-      </header>
-      <main className="container mx-auto px-4 py-8">{children}</main>
+      <Sidebar />
+      <main className="px-4 pt-20 md:pl-64 md:pt-8">{children}</main>
     </div>
   );
 }
